@@ -12,6 +12,8 @@
       :model="data"
       default-tree-node-name="new node"
       default-leaf-node-name="new leaf"
+      :hide-add-leaf-icon="true"
+      :always-show-icon="true"
       v-bind:default-expanded="false"
     >
       <template v-slot:addTreeNodeIcon="slotProps">
@@ -31,7 +33,12 @@
       </template>
       <template v-slot:treeNodeIcon="slotProps">
         <span class="icon">
-          {{ (slotProps.model.children && slotProps.model.children.length > 0 && !slotProps.expanded) ? '🌲' : '' }}</span>
+          {{
+            slotProps.model.children && slotProps.model.children.length > 0 && !slotProps.expanded
+              ? '🌲'
+              : ''
+          }}</span
+        >
       </template>
     </vue-tree-list>
     <button @click="getNewTree">Get new tree</button>
@@ -42,7 +49,8 @@
   </div>
 </template>
 <script>
-import {VueTreeList, Tree, TreeNode} from '../src'
+import { VueTreeList, Tree, TreeNode } from '../src'
+
 export default {
   components: {
     VueTreeList
@@ -100,34 +108,36 @@ export default {
       console.log(params)
     },
 
-    onClick(params) {
+    onClick(params, toogle) {
       // eslint-disable-next-line no-console
       console.log(params)
+      toogle()
     },
 
-    drop: function({node, src, target}) {
+    drop: function({ node, src, target }) {
       // eslint-disable-next-line no-console
       console.log('drop', node, src, target)
     },
 
-    dropBefore: function({node, src, target}) {
+    dropBefore: function({ node, src, target }) {
       // eslint-disable-next-line no-console
       console.log('drop-before', node, src, target)
     },
 
-    dropAfter: function({node, src, target}) {
+    dropAfter: function({ node, src, target }) {
       // eslint-disable-next-line no-console
       console.log('drop-after', node, src, target)
     },
 
     addNode() {
-      var node = new TreeNode({name: 'new node', isLeaf: false})
+      var node = new TreeNode({ name: 'new node', isLeaf: false })
       if (!this.data.children) this.data.children = []
       this.data.addChildren(node)
     },
 
     getNewTree() {
       var vm = this
+
       function _dfs(oldNode) {
         var newNode = {}
 
@@ -155,10 +165,12 @@ export default {
 .vtl {
   .vtl-drag-disabled {
     background-color: #d0cfcf;
+
     &:hover {
       background-color: #d0cfcf;
     }
   }
+
   .vtl-disabled {
     background-color: #d0cfcf;
   }

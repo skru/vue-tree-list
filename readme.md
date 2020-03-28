@@ -1,7 +1,11 @@
 [![Actions Status](https://github.com/ParadeTo/vue-tree-list/workflows/Test/badge.svg)](https://github.com/ParadeTo/vue-tree-list/actions)
 
-# vue-tree-list
+# vue-tree-list2
+
 A vue component for tree structure. Support adding treenode/leafnode, editing node's name and dragging.
+Editable is fixed. not drag in editable. <br/>
+
+if want hide icons
 
 ![vue-tree-demo.gif](https://raw.githubusercontent.com/ParadeTo/vue-tree-list/master/img/demo.gif)
 
@@ -13,7 +17,7 @@ Install the plugin then you can use the component globally.
 
 ```js
 import Vue from 'vue'
-import VueTreeList from 'vue-tree-list'
+import VueTreeList from 'vue-tree-list2'
 
 Vue.use(VueTreeList)
 ```
@@ -21,7 +25,8 @@ Vue.use(VueTreeList)
 Or just register locally like the example below.
 
 # use
-``npm install vue-tree-list``
+
+`npm install vue-tree-list2`
 
 ```html
 <template>
@@ -35,7 +40,8 @@ Or just register locally like the example below.
       :model="data"
       default-tree-node-name="new node"
       default-leaf-node-name="new leaf"
-      v-bind:default-expanded="false">
+      v-bind:default-expanded="false"
+    >
       <span class="icon" slot="addTreeNodeIcon">📂</span>
       <span class="icon" slot="addLeafNodeIcon">＋</span>
       <span class="icon" slot="editNodeIcon">📃</span>
@@ -51,12 +57,12 @@ Or just register locally like the example below.
 </template>
 
 <script>
-  import { VueTreeList, Tree, TreeNode } from 'vue-tree-list'
+  import { VueTreeList, Tree, TreeNode } from 'vue-tree-list2'
   export default {
     components: {
       VueTreeList
     },
-    data () {
+    data() {
       return {
         newTree: {},
         data: new Tree([
@@ -93,32 +99,34 @@ Or just register locally like the example below.
       }
     },
     methods: {
-      onDel (node) {
+      onDel(node) {
         console.log(node)
         node.remove()
       },
 
-      onChangeName (params) {
+      onChangeName(params) {
         console.log(params)
       },
 
-      onAddNode (params) {
+      onAddNode(params) {
         console.log(params)
       },
 
-      onClick (params) {
+      onClick(params, toogle) {
         console.log(params)
+        //if want toogle node status
+        //toogle();
       },
 
-      addNode () {
+      addNode() {
         var node = new TreeNode({ name: 'new node', isLeaf: false })
         if (!this.data.children) this.data.children = []
         this.data.addChildren(node)
       },
 
-      getNewTree () {
+      getNewTree() {
         var vm = this
-        function _dfs (oldNode) {
+        function _dfs(oldNode) {
           var newNode = {}
 
           for (var k in oldNode) {
@@ -137,8 +145,7 @@ Or just register locally like the example below.
         }
 
         vm.newTree = _dfs(vm.data)
-      },
-      
+      }
     }
   }
 </script>
@@ -164,54 +171,64 @@ Or just register locally like the example below.
     }
   }
 </style>
-
 ```
 
 # props
-## props of vue-tree-list
-| name | type | default | description |
-|:-----:|:-------:|:------------:|:----:|
-model | TreeNode | - | You can use `const head = new Tree([])` to generate a tree with the head of `TreeNode` type
-default-tree-node-name | string | New node node | Default name for new treenode
-default-leaf-node-name | string | New leaf node | Default name for new leafnode
-default-expanded | boolean | true | Tree is expanded or not
 
+## props of vue-tree-list
+
+|          name          |   type   |    default    |                                         description                                         |
+| :--------------------: | :------: | :-----------: | :-----------------------------------------------------------------------------------------: |
+|         model          | TreeNode |       -       | You can use `const head = new Tree([])` to generate a tree with the head of `TreeNode` type |
+| default-tree-node-name |  string  | New node node |                                Default name for new treenode                                |
+| default-leaf-node-name |  string  | New leaf node |                                Default name for new leafnode                                |
+|    default-expanded    | boolean  |     true      |                                   Tree is expanded or not                                   |
+|   hide-add-leaf-icon   | boolean  |     false     |                                     Hide add leaf icon                                      |
+|   hide-add-node-icon   | boolean  |     false     |                                     Hide add node icon                                      |
+|    hide-delete-icon    | boolean  |     false     |                                    Hide delete node icon                                    |
+|     hide-edit-icon     | boolean  |     false     |                                     Hide edit node icon                                     |
+|    always-show-icon    | boolean  |     false     |                               cancel show hover (always show)                               |
 
 ## props of TreeNode
+
 ### attributes
-| name | type | default | description |
-|:-----:|:-------:|:------------:|:----:|
-id | string, number | current timestamp | The node's id
-isLeaf | boolean | false | The node is leaf or not
-dragDisabled | boolean | false | Forbid dragging tree node
-addTreeNodeDisabled | boolean | false | Show `addTreeNode` button or not
-addLeafNodeDisabled | boolean | false | Show `addLeafNode` button or not
-editNodeDisabled | boolean | false | Show `editNode` button or not
-delNodeDisabled | boolean | false | Show `delNode` button or not
-children | array | null | The children of node
+
+|        name         |      type      |      default      |           description            |
+| :-----------------: | :------------: | :---------------: | :------------------------------: |
+|         id          | string, number | current timestamp |          The node's id           |
+|       isLeaf        |    boolean     |       false       |     The node is leaf or not      |
+|    dragDisabled     |    boolean     |       false       |    Forbid dragging tree node     |
+| addTreeNodeDisabled |    boolean     |       false       | Show `addTreeNode` button or not |
+| addLeafNodeDisabled |    boolean     |       false       | Show `addLeafNode` button or not |
+|  editNodeDisabled   |    boolean     |       false       |  Show `editNode` button or not   |
+|   delNodeDisabled   |    boolean     |       false       |   Show `delNode` button or not   |
+|      children       |     array      |       null        |       The children of node       |
 
 ### methods
-| name | params | description |
-|:-----:|:-------:|:----:|
-changeName | name | Change node's name
-addChildren | children: object, array | Add children to node
-remove | - | Remove node from the tree
-moveInto | target: TreeNode | Move node into another node
-insertBefore | target: TreeNode | Move node before another node
-insertAfter | target: TreeNode | Move node after another node
+
+|     name     |         params          |          description          |
+| :----------: | :---------------------: | :---------------------------: |
+|  changeName  |          name           |      Change node's name       |
+| addChildren  | children: object, array |     Add children to node      |
+|    remove    |            -            |   Remove node from the tree   |
+|   moveInto   |    target: TreeNode     |  Move node into another node  |
+| insertBefore |    target: TreeNode     | Move node before another node |
+| insertAfter  |    target: TreeNode     | Move node after another node  |
 
 # events
-| name | params | description |
-|:-----:|:-------:|:----:|
-click | TreeNode | Trigger when clicking a tree node
-change-name | {'id', 'oldName', 'newName'} | Trigger after changing a node's name
-delete-node | TreeNode | Trigger when clicking `delNode` button. You can call `remove` of `TreeNode` to remove the node.
-add-node | TreeNode | Trigger after adding a new node
-drop | {node, src, target} | Trigger after dropping a node into another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop into
-drop-before | {node, src, target} | Trigger after dropping a node before another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop before
-drop-after | {node, src, target} | Trigger after dropping a node after another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop after
+
+|    name     |            params            |                                                                           description                                                                           |
+| :---------: | :--------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|    click    |           TreeNode           |                                                                Trigger when clicking a tree node                                                                |
+| change-name | {'id', 'oldName', 'newName'} |                                                              Trigger after changing a node's name                                                               |
+| delete-node |           TreeNode           |                                 Trigger when clicking `delNode` button. You can call `remove` of `TreeNode` to remove the node.                                 |
+|  add-node   |           TreeNode           |                                                                 Trigger after adding a new node                                                                 |
+|    drop     |     {node, src, target}      |   Trigger after dropping a node into another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop into   |
+| drop-before |     {node, src, target}      | Trigger after dropping a node before another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop before |
+| drop-after  |     {node, src, target}      |  Trigger after dropping a node after another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop after  |
 
 # customize operation icons
+
 The component has default icons for `addTreeNodeIcon`, `addLeafNodeIcon`, `editNodeIcon`, `delNodeIcon`, `leafNodeIcon`, `treeNodeIcon` button, but you can also customize them and can access `model`, `root`, `expanded` as below:
 
 ```html
@@ -232,6 +249,8 @@ The component has default icons for `addTreeNodeIcon`, `addLeafNodeIcon`, `editN
 </template>
 <template v-slot:treeNodeIcon="slotProps">
   <span class="icon">
-    {{ (slotProps.model.children && slotProps.model.children.length > 0 && !slotProps.expanded) ? '🌲' : '' }}</span>
+    {{ (slotProps.model.children && slotProps.model.children.length > 0 && !slotProps.expanded) ?
+    '🌲' : '' }}</span
+  >
 </template>
 ```

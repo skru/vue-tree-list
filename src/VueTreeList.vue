@@ -16,7 +16,7 @@
       />
       <div
         :class="treeNodeClass"
-        :draggable="!model.dragDisabled"
+        :draggable="dragable"
         @dragstart="dragStart"
         @dragover="dragOver"
         @dragenter="dragEnter"
@@ -54,11 +54,11 @@
           @input="updateName"
           @blur="setUnEditable"
         />
-        <div class="vtl-operation" v-show="isHover">
+        <div class="vtl-operation" v-show="alwaysShowIcon || isHover">
           <span
             title="add tree node"
             @click.stop.prevent="addChild(false)"
-            v-if="!model.isLeaf && !model.addTreeNodeDisabled"
+            v-if="!hideAddNodeIcon && !model.isLeaf && !model.addTreeNodeDisabled"
           >
             <slot name="addTreeNodeIcon" :expanded="expanded" :model="model" :root="rootNode">
               <i class="vtl-icon vtl-icon-folder-plus-e"></i>
@@ -67,18 +67,26 @@
           <span
             title="add leaf node"
             @click.stop.prevent="addChild(true)"
-            v-if="!model.isLeaf && !model.addLeafNodeDisabled"
+            v-if="!hideAddLeafIcon && !model.isLeaf && !model.addLeafNodeDisabled"
           >
             <slot name="addLeafNodeIcon" :expanded="expanded" :model="model" :root="rootNode">
               <i class="vtl-icon vtl-icon-plus"></i>
             </slot>
           </span>
-          <span title="edit" @click.stop.prevent="setEditable" v-if="!model.editNodeDisabled">
+          <span
+            title="edit"
+            @click.stop.prevent="setEditable"
+            v-if="!hideEditIcon && !model.editNodeDisabled"
+          >
             <slot name="editNodeIcon" :expanded="expanded" :model="model" :root="rootNode">
               <i class="vtl-icon vtl-icon-edit"></i>
             </slot>
           </span>
-          <span title="delete" @click.stop.prevent="delNode" v-if="!model.delNodeDisabled">
+          <span
+            title="delete"
+            @click.stop.prevent="delNode"
+            v-if="!hideDeleteIcon && !model.delNodeDisabled"
+          >
             <slot name="delNodeIcon" :expanded="expanded" :model="model" :root="rootNode">
               <i class="vtl-icon vtl-icon-trash"></i>
             </slot>
@@ -109,6 +117,11 @@
         :default-expanded="defaultExpanded"
         :model="model"
         :key="model.id"
+        :hide-add-leaf-icon="hideAddLeafIcon"
+        :hide-add-node-icon="hideAddNodeIcon"
+        :hide-edit-icon="hideEditIcon"
+        :hide-delete-icon="hideDeleteIcon"
+        :always-show-icon="alwaysShowIcon"
       >
         <template v-slot:addTreeNodeIcon="slotProps">
           <slot name="addTreeNodeIcon" v-bind="slotProps" />
@@ -166,7 +179,12 @@ export default {
     defaultExpanded: {
       type: Boolean,
       default: true
-    }
+    },
+    hideAddLeafIcon: { type: Boolean, default: false, required: false },
+    hideAddNodeIcon: { type: Boolean, default: false, required: false },
+    hideEditIcon: { type: Boolean, default: false, required: false },
+    hideDeleteIcon: { type: Boolean, default: false, required: false },
+    alwaysShowIcon: { type: Boolean, default: false, required: false }
   },
   computed: {
     rootNode() {
@@ -197,6 +215,9 @@ export default {
         'vtl-drag-disabled': dragDisabled,
         'vtl-disabled': disabled
       }
+    },
+    dragable() {
+      return !this.model.dragDisabled && !this.editable
     }
   },
   beforeCreate() {
@@ -243,6 +264,7 @@ export default {
     },
 
     toggle() {
+      if (this.editable) return
       if (this.isFolder) {
         this.expanded = !this.expanded
       }
@@ -258,7 +280,7 @@ export default {
     },
 
     click() {
-      this.rootNode.$emit('click', this.model)
+      this.rootNode.$emit('click', this.model, this.toggle)
     },
 
     addChild(isLeaf) {
@@ -382,12 +404,15 @@ export default {
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
   &.vtl-menu-icon {
     margin-right: 4px;
+
     &:hover {
       color: inherit;
     }
   }
+
   &:hover {
     color: blue;
   }
@@ -396,37 +421,47 @@ export default {
 .vtl-icon-file:before {
   content: '\e906';
 }
+
 .vtl-icon-folder:before {
   content: '\e907';
 }
+
 .vtl-icon-caret-down:before {
   content: '\e901';
 }
+
 .vtl-icon-caret-right:before {
   content: '\e900';
 }
+
 .vtl-icon-edit:before {
   content: '\e902';
 }
+
 .vtl-icon-folder-plus-e:before {
   content: '\e903';
 }
+
 .vtl-icon-plus:before {
   content: '\e904';
 }
+
 .vtl-icon-trash:before {
   content: '\e905';
 }
 
 .vtl-border {
   height: 5px;
+
   &.vtl-up {
     margin-top: -5px;
     background-color: transparent;
   }
+
   &.vtl-bottom {
     background-color: transparent;
   }
+
   &.vtl-active {
     border-bottom: 3px dashed blue;
     /*background-color: blue;*/
@@ -437,20 +472,25 @@ export default {
   display: flex;
   align-items: center;
   padding: 5px 0 5px 1rem;
+
   .vtl-input {
     border: none;
     max-width: 150px;
     border-bottom: 1px solid blue;
   }
+
   &:hover {
     background-color: #f0f0f0;
   }
+
   &.vtl-active {
     outline: 2px dashed pink;
   }
+
   .vtl-caret {
     margin-left: -1rem;
   }
+
   .vtl-operation {
     margin-left: 2rem;
     letter-spacing: 1px;
@@ -460,6 +500,7 @@ export default {
 .vtl-item {
   cursor: pointer;
 }
+
 .vtl-tree-margin {
   margin-left: 2em;
 }
