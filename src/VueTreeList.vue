@@ -27,7 +27,7 @@
         @mouseout="mouseOut"
         @click.stop="click"
       >
-        <span class="vtl-caret vtl-is-small" v-if="model.children && model.children.length > 0">
+        <span class="vtl-caret vtl-is-small" v-if="showChildIconData">
           <i class="vtl-icon" :class="caretClass" @click.prevent.stop="toggle"></i>
         </span>
 
@@ -122,6 +122,8 @@
         :hide-edit-icon="hideEditIcon"
         :hide-delete-icon="hideDeleteIcon"
         :always-show-icon="alwaysShowIcon"
+        :show-child-icon="showChildIcon"
+        :add-manuel-node="addManuelNode"
       >
         <template v-slot:addTreeNodeIcon="slotProps">
           <slot name="addTreeNodeIcon" v-bind="slotProps" />
@@ -184,7 +186,9 @@ export default {
     hideAddNodeIcon: { type: Boolean, default: false, required: false },
     hideEditIcon: { type: Boolean, default: false, required: false },
     hideDeleteIcon: { type: Boolean, default: false, required: false },
-    alwaysShowIcon: { type: Boolean, default: false, required: false }
+    alwaysShowIcon: { type: Boolean, default: false, required: false },
+    showChildIcon: { type: Boolean, default: true, required: false },
+    addManuelNode: { type: Boolean, default: false, required: false }
   },
   computed: {
     rootNode() {
@@ -218,6 +222,9 @@ export default {
     },
     dragable() {
       return !this.model.dragDisabled && !this.editable
+    },
+    showChildIconData() {
+      return this.showChildIcon && this.model.children && this.model.children.length > 0
     }
   },
   beforeCreate() {
@@ -225,9 +232,10 @@ export default {
   },
   mounted() {
     const vm = this
-    addHandler(window, 'keyup', function(e) {
+    addHandler(window, 'keyup', e => {
       // click enter
       if (e.keyCode === 13 && vm.editable) {
+        this.updatedName()
         vm.editable = false
       }
     })
@@ -245,7 +253,12 @@ export default {
         newName: e.target.value
       })
     },
-
+    updatedName() {
+      this.rootNode.$emit('changed-name', {
+        id: this.model.id,
+        newName: this.model.name
+      })
+    },
     delNode() {
       this.rootNode.$emit('delete-node', this.model)
     },
@@ -260,6 +273,7 @@ export default {
     },
 
     setUnEditable() {
+      if (this.editable) this.updatedName()
       this.editable = false
     },
 
@@ -284,9 +298,39 @@ export default {
     },
 
     addChild(isLeaf) {
-      const name = isLeaf ? this.defaultLeafNodeName : this.defaultTreeNodeName
+      if (!this.addManuelNode) {
+        if (isLeaf) this.addChildLeaf(this.defaultLeafNodeName, null)
+        else this.addChildTreeNode(this.defaultTreeNodeName, null)
+      } else {
+        if (isLeaf) {
+          this.rootNode.$emit('add-child-leaf', this.addChildLeaf)
+        } else {
+          this.rootNode.$emit('add-child-tree', this.addChildTreeNode)
+        }
+      }
+    },
+
+    /**
+     * @param {String} name
+     * @param {Object} options
+     */
+    addChildLeaf(name, options) {
       this.expanded = true
-      var node = new TreeNode({ name, isLeaf })
+      let data = null
+      if (options) data = { ...options, name, isLeaf: true }
+      else data = { name, isLeaf: true }
+      var node = new TreeNode(data)
+      this.model.addChildren(node, true)
+      this.rootNode.$emit('add-node', node)
+    },
+
+    /**
+     * @param {String} name
+     * @param {Object} options
+     */
+    addChildTreeNode(name, options) {
+      this.expanded = true
+      var node = new TreeNode({ ...options, name, isLeaf: false })
       this.model.addChildren(node, true)
       this.rootNode.$emit('add-node', node)
     },

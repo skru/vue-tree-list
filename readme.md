@@ -47,7 +47,18 @@ Or just register locally like the example below.
       <span class="icon" slot="editNodeIcon">📃</span>
       <span class="icon" slot="delNodeIcon">✂️</span>
       <span class="icon" slot="leafNodeIcon">🍃</span>
-      <span class="icon" slot="treeNodeIcon">🌲</span>
+      <template v-slot:treeNodeIcon="slotProps">
+          <div class="icon pl-4 pr-2" v-if="slotProps.model.children && slotProps.model.children.length > 0">
+              //no extended icon
+              <vs-icon icon="keyboard_arrow_right" class="icon-style" v-if="!slotProps.expanded"/>
+              //extended icon
+              <vs-icon icon="keyboard_arrow_down" class="icon-style" v-if="slotProps.expanded"/>
+          </div>
+          //no child icon
+          <vs-icon v-else icon="fiber_manual_record" class="icon-style"/>
+        </template>
+      </vue-tree-list>
+
     </vue-tree-list>
     <button @click="getNewTree">Get new tree</button>
     <pre>
@@ -188,6 +199,8 @@ Or just register locally like the example below.
 |    hide-delete-icon    | boolean  |     false     |                                    Hide delete node icon                                    |
 |     hide-edit-icon     | boolean  |     false     |                                     Hide edit node icon                                     |
 |    always-show-icon    | boolean  |     false     |                               cancel show hover (always show)                               |
+|    show-child-icon     | boolean  |     true      |                              do active and passive childe icon                              |
+|    add-manuel-node     | boolean  |     false     |             use "add-child-leaf" or "add-child-tree" event for add leaf or tree             |
 
 ## props of TreeNode
 
@@ -217,15 +230,18 @@ Or just register locally like the example below.
 
 # events
 
-|    name     |            params            |                                                                           description                                                                           |
-| :---------: | :--------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|    click    |           TreeNode           |                                                                Trigger when clicking a tree node                                                                |
-| change-name | {'id', 'oldName', 'newName'} |                                                              Trigger after changing a node's name                                                               |
-| delete-node |           TreeNode           |                                 Trigger when clicking `delNode` button. You can call `remove` of `TreeNode` to remove the node.                                 |
-|  add-node   |           TreeNode           |                                                                 Trigger after adding a new node                                                                 |
-|    drop     |     {node, src, target}      |   Trigger after dropping a node into another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop into   |
-| drop-before |     {node, src, target}      | Trigger after dropping a node before another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop before |
-| drop-after  |     {node, src, target}      |  Trigger after dropping a node after another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop after  |
+|      name      |            params            |                                                                           description                                                                           |
+| :------------: | :--------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|     click      |           TreeNode           |                                                                Trigger when clicking a tree node                                                                |
+|  change-name   | {'id', 'oldName', 'newName'} |                                                                 Trigger changing a node's name                                                                  |
+|  changed-name  |      {'id', 'newName'}       |                                                                 Complate changing a node's name                                                                 |
+|  delete-node   |           TreeNode           |                                 Trigger when clicking `delNode` button. You can call `remove` of `TreeNode` to remove the node.                                 |
+|    add-node    |           TreeNode           |                                                                 Trigger after adding a new node                                                                 |
+|      drop      |     {node, src, target}      |   Trigger after dropping a node into another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop into   |
+|  drop-before   |     {node, src, target}      | Trigger after dropping a node before another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop before |
+|   drop-after   |     {node, src, target}      |  Trigger after dropping a node after another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop after  |
+| add-child-leaf |    Function(name,options)    |                                        if add-manuel-node is true, this event triger for add leaf. Example in page down                                         |
+| add-child-tree |    Function(name,options)    |                                      if add-manuel-node is true, this event triger for add tree node. Example in page down                                      |
 
 # customize operation icons
 
@@ -253,4 +269,49 @@ The component has default icons for `addTreeNodeIcon`, `addLeafNodeIcon`, `editN
     '🌲' : '' }}</span
   >
 </template>
+```
+
+#add-child-leaf and add-child-tree event Example
+
+```html
+<vue-tree-list :add-manuel-node="true" @add-child-tree="addManuelTreeNode">
+  <template v-slot:addTreeNodeIcon="slotProps">
+    <span class="icon">📂</span>
+  </template>
+  <template v-slot:addLeafNodeIcon="slotProps">
+    <span class="icon">＋</span>
+  </template>
+  <template v-slot:editNodeIcon="slotProps">
+    <span class="icon">📃</span>
+  </template>
+  <template v-slot:delNodeIcon="slotProps">
+    <span class="icon">✂️</span>
+  </template>
+  <template v-slot:leafNodeIcon="slotProps">
+    <span class="icon">🍃</span>
+  </template>
+  <template v-slot:treeNodeIcon="slotProps">
+    <span class="icon">
+      {{ slotProps.model.children && slotProps.model.children.length > 0 && !slotProps.expanded ?
+      '🌲' : '' }}</span
+    >
+  </template>
+</vue-tree-list>
+```
+
+```js
+
+methods:
+  addManuelTreeNode(addMethod)
+  {
+      //learn current data info with "this.data"
+      addMethod('Test Node name', {
+        dragDisabled: false,
+        addTreeNodeDisabled: false,
+        addLeafNodeDisabled: false,
+        editNodeDisabled: false,
+        delNodeDisabled: false,
+        id: '123123'
+      }
+  }
 ```

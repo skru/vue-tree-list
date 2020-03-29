@@ -3,7 +3,7 @@
     <button @click="addNode">Add Node</button>
     <vue-tree-list
       @click="onClick"
-      @change-name="onChangeName"
+      @changed-name="onChangeName"
       @delete-node="onDel"
       @add-node="onAddNode"
       @drop="drop"
@@ -15,6 +15,9 @@
       :hide-add-leaf-icon="true"
       :always-show-icon="true"
       v-bind:default-expanded="false"
+      :show-child-icon="false"
+      :add-manuel-node="true"
+      @add-child-tree="addManuelTreeNode"
     >
       <template v-slot:addTreeNodeIcon="slotProps">
         <span class="icon">📂</span>
@@ -157,6 +160,17 @@ export default {
       }
 
       vm.newTree = _dfs(vm.data)
+    },
+    addManuelTreeNode(addMethod) {
+      console.log('data', this.data)
+      addMethod('Test Node add', {
+        dragDisabled: false,
+        addTreeNodeDisabled: false,
+        addLeafNodeDisabled: false,
+        editNodeDisabled: false,
+        delNodeDisabled: false,
+        id: '123123'
+      })
     }
   }
 }
