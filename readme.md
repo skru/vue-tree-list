@@ -230,18 +230,18 @@ Or just register locally like the example below.
 
 # events
 
-|      name      |            params            |                                                                           description                                                                           |
-| :------------: | :--------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|     click      |           TreeNode           |                                                                Trigger when clicking a tree node                                                                |
-|  change-name   | {'id', 'oldName', 'newName'} |                                                                 Trigger changing a node's name                                                                  |
-|  changed-name  |      {'id', 'newName'}       |                                                                 Complate changing a node's name                                                                 |
-|  delete-node   |           TreeNode           |                                 Trigger when clicking `delNode` button. You can call `remove` of `TreeNode` to remove the node.                                 |
-|    add-node    |           TreeNode           |                                                                 Trigger after adding a new node                                                                 |
-|      drop      |     {node, src, target}      |   Trigger after dropping a node into another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop into   |
-|  drop-before   |     {node, src, target}      | Trigger after dropping a node before another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop before |
-|   drop-after   |     {node, src, target}      |  Trigger after dropping a node after another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop after  |
-| add-child-leaf |    Function(name,options)    |                                        if add-manuel-node is true, this event triger for add leaf. Example in page down                                         |
-| add-child-tree |    Function(name,options)    |                                      if add-manuel-node is true, this event triger for add tree node. Example in page down                                      |
+|      name      |              params              |                                                                           description                                                                           |
+| :------------: | :------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|     click      |             TreeNode             |                                                                Trigger when clicking a tree node                                                                |
+|  change-name   |   {'id', 'oldName', 'newName'}   |                                                                 Trigger changing a node's name                                                                  |
+|  changed-name  |        {'id', 'newName'}         |                                                                 Complate changing a node's name                                                                 |
+|  delete-node   |             TreeNode             |                                 Trigger when clicking `delNode` button. You can call `remove` of `TreeNode` to remove the node.                                 |
+|    add-node    |             TreeNode             |                                                                 Trigger after adding a new node                                                                 |
+|      drop      |       {node, src, target}        |   Trigger after dropping a node into another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop into   |
+|  drop-before   |       {node, src, target}        | Trigger after dropping a node before another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop before |
+|   drop-after   |       {node, src, target}        |  Trigger after dropping a node after another. node: the draggable node, src: the draggable node's parent, target: the node that draggable node will drop after  |
+| add-child-leaf | Function(name,options), addModel |                                        if add-manuel-node is true, this event triger for add leaf. Example in page down                                         |
+| add-child-tree | Function(name,options), addModel |                                      if add-manuel-node is true, this event triger for add tree node. Example in page down                                      |
 
 # customize operation icons
 
@@ -300,18 +300,16 @@ The component has default icons for `addTreeNodeIcon`, `addLeafNodeIcon`, `editN
 ```
 
 ```js
-
-methods:
-  addManuelTreeNode(addMethod)
-  {
-      //learn current data info with "this.data"
-      addMethod('Test Node name', {
-        dragDisabled: false,
-        addTreeNodeDisabled: false,
-        addLeafNodeDisabled: false,
-        editNodeDisabled: false,
-        delNodeDisabled: false,
-        id: '123123'
-      }
-  }
+methods: addManuelTreeNode(addMethod, clickModel)
+{
+  //learn current data info with "this.data"
+  addMethod('Test Node name', {
+    dragDisabled: false,
+    addTreeNodeDisabled: false,
+    addLeafNodeDisabled: false,
+    editNodeDisabled: false,
+    delNodeDisabled: false,
+    id: '123123'
+  })
+}
 ```

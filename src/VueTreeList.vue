@@ -303,9 +303,9 @@ export default {
         else this.addChildTreeNode(this.defaultTreeNodeName, null)
       } else {
         if (isLeaf) {
-          this.rootNode.$emit('add-child-leaf', this.addChildLeaf)
+          this.rootNode.$emit('add-child-leaf', this.addChildLeaf, this.model)
         } else {
-          this.rootNode.$emit('add-child-tree', this.addChildTreeNode)
+          this.rootNode.$emit('add-child-tree', this.addChildTreeNode, this.model)
         }
       }
     },

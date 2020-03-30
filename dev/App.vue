@@ -17,7 +17,7 @@
       v-bind:default-expanded="false"
       :show-child-icon="false"
       :add-manuel-node="true"
-      @add-child-tree="addManuelTreeNode"
+      v-bind:add-child-tree="addManuelTreeNode"
     >
       <template v-slot:addTreeNodeIcon="slotProps">
         <span class="icon">📂</span>
