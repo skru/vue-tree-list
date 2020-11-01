@@ -128,6 +128,7 @@
         :always-show-icon="alwaysShowIcon"
         :show-child-icon="showChildIcon"
         :add-manuel-node="addManuelNode"
+        :leaf-event="leafEvent"
       >
         <template v-slot:leafNameDisplay="slotProps">
           <slot name="leafNameDisplay" v-bind="slotProps" />
