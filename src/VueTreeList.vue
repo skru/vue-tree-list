@@ -43,9 +43,6 @@
         </span>
         <div class="vtl-node-content" v-if="!editable">
           {{ model.name }}
-          <slot name="leafNameDisplay" :expanded="expanded" :model="model" :root="rootNode">
-            <a href="">EDIT</a>
-          </slot>
         </div>
         <input
           v-else
@@ -91,6 +88,11 @@
           >
             <slot name="delNodeIcon" :expanded="expanded" :model="model" :root="rootNode">
               <i class="vtl-icon vtl-icon-trash"></i>
+            </slot>
+          </span>
+          <span title="open" @click.stop.prevent="leafEvent">
+            <slot name="leafNameDisplay" :expanded="expanded" :model="model" :root="rootNode">
+              EDIT FILE
             </slot>
           </span>
         </div>
@@ -300,6 +302,10 @@ export default {
 
     click() {
       this.rootNode.$emit('click', this.model, this.toggle)
+    },
+
+    leafEvent(nodeId) {
+      this.rootNode.$emit('leaf-event', this.model, this.toggle, nodeId)
     },
 
     addChild(isLeaf) {
