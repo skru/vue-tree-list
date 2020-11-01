@@ -90,7 +90,7 @@
               <i class="vtl-icon vtl-icon-trash"></i>
             </slot>
           </span>
-          <span title="open" @click.stop.prevent="leafEvent">
+          <span title="open" @click.stop.prevent="leafEvent" v-if="model.isLeaf">
             <slot name="leafNameDisplay" :expanded="expanded" :model="model" :root="rootNode">
               EDIT FILE
             </slot>
